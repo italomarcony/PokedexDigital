@@ -28,6 +28,7 @@ FROM python:3.11-slim
 # Instala Nginx e dependências
 RUN apt-get update && apt-get install -y \
     nginx \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Cria diretórios necessários
@@ -43,8 +44,14 @@ COPY backend/ ./
 # Copia frontend buildado do stage anterior
 COPY --from=frontend-build /frontend/dist/frontend/browser /usr/share/nginx/html
 
-# Copia configuração do Nginx
-COPY nginx-production.conf /etc/nginx/sites-available/default
+# Remove configuração padrão do Nginx e copia a nossa
+RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+COPY nginx-production.conf /etc/nginx/sites-enabled/default
+
+# Cria diretórios necessários para Nginx
+RUN mkdir -p /var/log/nginx /var/lib/nginx/body /var/lib/nginx/proxy \
+    && chown -R www-data:www-data /var/log/nginx /var/lib/nginx \
+    && chmod -R 755 /var/log/nginx
 
 # Cria diretório para banco de dados SQLite
 RUN mkdir -p /app/instance
