@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pokedex-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app
+      - PYTHONUNBUFFERED=1
+      - JWT_SECRET_KEY=sua-chave-secreta-aqui-mude-em-producao
+    volumes:
+      - ./backend:/app
+      - backend-data:/app/instance
+    networks:
+      - pokedex-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pokedex-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - pokedex-network
+    restart: unless-stopped
+
+networks:
+  pokedex-network:
+    driver: bridge
+
+volumes:
+  backend-data:
