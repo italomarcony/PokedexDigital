@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [FormsModule, NgIf, RouterLink],
   template: `
     <div style="max-width: 400px; margin: 50px auto; padding: 20px;">
-      <h2>Criar Conta</h2>
+      <h2 style="margin-bottom: 32px;">Criar Conta</h2>
       <form (ngSubmit)="submit()" #f="ngForm" style="display:flex; flex-direction:column; gap:12px;">
         <input
           name="nome"

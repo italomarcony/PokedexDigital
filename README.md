@@ -50,12 +50,28 @@ Sistema completo de gerenciamento de Pokémon com autenticação JWT, integraç�
   - Proteção contra auto-deleção
   - Dados sensíveis (login/email) ocultos por segurança
 - ✅ **Melhorias de UI/UX**:
-  - **Cards detalhados** exibindo número da Pokédex, tipos e stats (HP, ATK, DEF, SPD)
-  - **Sistema de paginação** (50 Pokémon por página) para melhor performance
-  - Badges visuais para favoritos e equipe
-  - Toast notifications para feedback
+  - **Cards com Glassmorphism** (efeito de vidro fosco com backdrop-filter)
+  - **Modo Escuro** (Dark Mode) com toggle e persistência no localStorage
+  - **Cards detalhados** exibindo:
+    - Número da Pokédex formatado (#001, #002, etc.)
+    - Badge de geração do Pokémon
+    - Tipos com cores oficiais (18 tipos diferentes)
+    - **Barras de progresso animadas** para stats (HP, ATK, DEF, SPD)
+    - **Indicador de Poder Total** (soma de todos os stats)
+  - **Loading Skeletons** animados durante carregamento
+  - **Sistema de paginação** (50 Pokémon por página) com transições suaves
+  - **Animações e Hover Effects**:
+    - Cards com zoom e elevação ao hover
+    - Imagem do Pokémon rotaciona e aumenta ao hover
+    - Transições suaves entre páginas e filtros
+    - Shimmer effect nas barras de progresso
+  - **Grid Responsivo Adaptativo**:
+    - Mobile: 1 coluna
+    - Tablet: 2-3 colunas
+    - Desktop: 4-5 colunas
+  - Badges visuais para favoritos e equipe com animação bounce
+  - Toast notifications com glassmorphism
   - Hero banner e barra de estatísticas
-  - Design responsivo com gradientes
   - Cores oficiais dos tipos de Pokémon
 - ✅ **Docker** com docker-compose
 
@@ -191,18 +207,51 @@ python recreate_db.py
 
 ## 🎨 Features de Interface
 
+- **Modo Escuro/Claro** (Dark/Light Mode):
+  - Toggle flutuante no canto superior direito
+  - Persistência da preferência no localStorage
+  - Transições suaves entre modos
+  - Paletas de cores otimizadas para cada modo
+
 - **Hero Banner** com título e descrição
 - **Barra de Estatísticas** (1302 Pokémon, 18 Tipos, 9 Gerações)
-- **Cards de Pokémon Detalhados**:
+
+- **Cards de Pokémon com Glassmorphism**:
+  - Efeito de vidro fosco (backdrop-filter: blur)
+  - Gradientes sutis nas bordas
   - Número da Pokédex com formatação (#001, #002, etc.)
-  - Imagens oficiais dos sprites
+  - Badge de geração (Gen 1-10)
+  - Imagens oficiais dos sprites com drop-shadow
   - Tipos com cores oficiais (18 tipos diferentes)
-  - Stats principais: HP, Attack, Defense, Speed
-  - Badges visuais (⭐ Fav e ⚔️ Equipe)
-- **Sistema de Paginação**: 50 Pokémon por página com navegação (Primeira, Anterior, Próxima, Última)
+  - **Barras de progresso animadas** para stats:
+    - HP (vermelho), ATK (laranja), DEF (azul), SPD (verde)
+    - Efeito shimmer nas barras
+    - Valores numéricos e porcentagem visual
+  - Indicador de Poder Total (soma de todos os stats)
+  - Badges visuais com animação bounce (⭐ Fav e ⚔️ Equipe)
+  - **Hover Effects**:
+    - Card eleva e aumenta levemente (translateY + scale)
+    - Imagem rotaciona 5° e aumenta
+    - Brilho sutil com gradiente
+  - Aspect ratio fixo 3:4 para consistência
+
+- **Loading Skeletons**: Animação de pulso durante carregamento inicial
+
+- **Sistema de Paginação**:
+  - 50 Pokémon por página
+  - Navegação (Primeira, Anterior, Próxima, Última)
+  - Scroll suave ao mudar de página
+  - Preload de próximas páginas
+
+- **Grid Responsivo Adaptativo**:
+  - Mobile (≤768px): 1 coluna
+  - Tablet (769-1024px): 2 colunas
+  - Desktop (1025-1440px): 3 colunas
+  - Large Desktop (≥1441px): 4 colunas
+
 - **Filtros Interativos** por nome, tipo e geração
-- **Toast Notifications** para feedback de ações
-- **Design Responsivo** com gradientes laranja e roxo
+- **Toast Notifications** com glassmorphism e animações
+- **Design Moderno** com gradientes laranja, roxo e azul
 - **Proteção de Rotas** com guards de autenticação e admin
 
 ## 🔒 Segurança
@@ -224,8 +273,8 @@ python recreate_db.py
 
 ## 👤 Autor
 
-Desenvolvido como parte do processo seletivo para Desenvolvedor Full Stack Jr/Trainee na Kogui.
+Desenvolvido por **Italo Marcony** como projeto de estudo e aprendizado de tecnologias fullstack modernas, com foco em Angular 17+ (Standalone Components) e Flask com autenticação JWT.
 
 ---
 
-**Processo seletivo Kogui - Pessoa Desenvolvedora Full Stack Júnior / Trainee**
+⭐ Se este projeto foi útil, considere dar uma estrela no repositório!

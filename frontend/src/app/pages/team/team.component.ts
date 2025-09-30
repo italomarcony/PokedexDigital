@@ -3,6 +3,8 @@ import { NgFor, NgIf, NgClass } from '@angular/common';
 import { UserPokemonService } from '../../services/user-pokemon.service';
 import { EventService } from '../../services/event.service';
 import { PokemonService } from '../../services/pokemon.service';
+import { AuthService } from '../../services/auth.service';
+import { PokemonCardComponent } from '../../components/pokemon-card/pokemon-card.component';
 import { Subscription, filter, forkJoin } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 
@@ -16,7 +18,7 @@ interface PokemonDetail {
 @Component({
   selector: 'app-team',
   standalone: true,
-  imports: [NgFor, NgIf, NgClass],
+  imports: [NgFor, NgIf, NgClass, PokemonCardComponent],
   template: `
     <div *ngIf="toast()"
          [ngClass]="{'toast-success': toast()?.type === 'success', 'toast-error': toast()?.type === 'error'}"
@@ -32,56 +34,51 @@ interface PokemonDetail {
       <div style="font-size:18px; font-weight:600;">Nenhum integrante na equipe.</div>
       <div style="margin-top:8px;">Monte sua equipe de batalha com até 6 Pokémon!</div>
     </div>
-    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:16px;">
-      <div *ngFor="let p of items()"
-           style="border:2px solid #ddd; border-radius:12px; padding:12px; text-align:center; position:relative; background:white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-
-        <!-- Badge Equipe -->
-        <div style="position:absolute; top:8px; right:8px; z-index:1;">
-          <span style="background:#4caf50; color:#fff; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:600;">
-            ⚔️ Equipe
-          </span>
-        </div>
-
-        <!-- Número da Pokédex -->
-        <div style="position:absolute; top:8px; left:8px; background:#667eea; color:white; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:700;">
-          #{{ getPokemonId(p) }}
-        </div>
-
-        <div style="margin-top:24px;">
-          <img [src]="p.ImagemUrl" alt="{{ p.Nome }}" width="96" height="96" style="image-rendering: pixelated;" />
-        </div>
-
-        <div style="margin:8px 0; text-transform:capitalize; font-weight:600; font-size:15px;">{{ p.Nome }}</div>
-
-        <!-- Tipos -->
-        <div style="display:flex; gap:6px; justify-content:center; margin:8px 0; flex-wrap:wrap;">
-          <span *ngFor="let type of getPokemonTypes(p)"
-                [style.background]="getTypeColor(type)"
-                style="color:white; padding:4px 12px; border-radius:14px; font-size:11px; font-weight:600; text-transform:uppercase;">
-            {{ type }}
-          </span>
-        </div>
-
-        <!-- Stats -->
-        <div style="margin:10px 0; text-align:left; background:#f9f9f9; padding:8px; border-radius:6px; font-size:11px;">
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
-            <div><strong>HP:</strong> {{ getPokemonStat(p, 'hp') }}</div>
-            <div><strong>ATK:</strong> {{ getPokemonStat(p, 'attack') }}</div>
-            <div><strong>DEF:</strong> {{ getPokemonStat(p, 'defense') }}</div>
-            <div><strong>SPD:</strong> {{ getPokemonStat(p, 'speed') }}</div>
-          </div>
-        </div>
-
-        <button
-          (click)="remove(p)"
-          style="width:100%; padding:10px; background:#f44336; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600; margin-top:8px;">
-          Remover
-        </button>
-      </div>
+    <div class="pokemon-grid">
+      <app-pokemon-card
+        *ngFor="let p of items()"
+        [pokemon]="p"
+        [detail]="pokemonDetailsCache.get(p.Codigo.toLowerCase())"
+        [isFavorite]="false"
+        [isInTeam]="true"
+        [darkMode]="darkMode()"
+        [showRemoveButton]="true"
+        (onRemove)="remove(p)">
+      </app-pokemon-card>
     </div>
   `,
   styles: [`
+    .pokemon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      padding: 16px 0;
+    }
+
+    @media (max-width: 768px) {
+      .pokemon-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .pokemon-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1440px) {
+      .pokemon-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1441px) {
+      .pokemon-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
     .toast {
       position: fixed;
       top: 80px;
@@ -121,12 +118,22 @@ export class TeamComponent implements OnInit, OnDestroy {
   private eventService = inject(EventService);
   private router = inject(Router);
   private pokemonService = inject(PokemonService);
+  private authService = inject(AuthService);
   private subscription?: Subscription;
   private navSub?: Subscription;
   items = signal<any[]>([]);
   error = signal<string>('');
   toast = signal<{message: string, type: 'success' | 'error'} | null>(null);
   pokemonDetailsCache = new Map<string, PokemonDetail>();
+  darkMode = signal<boolean>(false);
+
+  constructor() {
+    // Carrega preferência de dark mode do localStorage
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode === 'true') {
+      this.darkMode.set(true);
+    }
+  }
 
   ngOnInit() {
     this.reload();
