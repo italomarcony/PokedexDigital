@@ -238,3 +238,91 @@
 <main class="app-content">
   <router-outlet />
 </main>
+
+<!-- Footer -->
+<footer class="main-footer">
+  <div class="footer-content">
+    <div class="footer-section footer-about">
+      <h3 class="footer-title">
+        <svg class="pokeball-icon-small" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="white" stroke="#333" stroke-width="2"/>
+          <path d="M 2 50 A 48 48 0 0 1 98 50 L 70 50 A 20 20 0 0 0 30 50 Z" fill="#EE1515"/>
+          <rect x="2" y="47" width="96" height="6" fill="#333"/>
+          <circle cx="50" cy="50" r="12" fill="white" stroke="#333" stroke-width="2"/>
+          <circle cx="50" cy="50" r="6" fill="white" stroke="#333" stroke-width="2"/>
+        </svg>
+        Pokédex Digital
+      </h3>
+      <p class="footer-description">
+        Uma aplicação completa para explorar e gerenciar sua coleção de Pokémon.
+      </p>
+    </div>
+
+    <div class="footer-section footer-links">
+      <h4 class="footer-subtitle">Navegação Rápida</h4>
+      <ul class="footer-menu">
+        <li><a routerLink="/">Lista de Pokémon</a></li>
+        <li><a routerLink="/favorites">Meus Favoritos</a></li>
+        <li><a routerLink="/team">Minha Equipe</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section footer-stats">
+      <h4 class="footer-subtitle">Recursos</h4>
+      <ul class="footer-stats-list">
+        <li><strong>1302</strong> Pokémon</li>
+        <li><strong>9</strong> Gerações</li>
+        <li><strong>18</strong> Tipos</li>
+      </ul>
+    </div>
+
+    <div class="footer-section footer-credits">
+      <h4 class="footer-subtitle">Créditos</h4>
+      <p class="footer-powered">
+        <a href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">
+          Powered by PokéAPI
+        </a>
+      </p>
+      <p class="footer-docs">
+        <a href="https://github.com/italomarcony/PokedexDigital" target="_blank" rel="noopener noreferrer">
+          📖 Documentação
+        </a>
+      </p>
+      <div class="footer-tech-section">
+        <p class="footer-tech-label">Tecnologias</p>
+        <div class="footer-tech-badges">
+          <span class="tech-badge" title="Angular 17">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10.483 12.482h3.034L12 8.831z"/>
+              <path d="M12 3.074L3.689 6.038l1.268 10.987 7.043 3.9 7.043-3.9 1.268-10.987L12 3.074zm5.187 13.621H15.25l-1.045-2.606h-4.41L8.75 16.695H6.813L12 5.047l5.187 11.648z"/>
+            </svg>
+          </span>
+          <span class="tech-badge" title="Flask">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L9.5 6.5V11L4 22h16l-5.5-11V6.5L12 2zm0 2.5l1.5 3v5l4.5 9h-12l4.5-9v-5l1.5-3z"/>
+            </svg>
+          </span>
+          <span class="tech-badge" title="TypeScript">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M0 12v12h24V0H0zm19.341-.956c.61.152 1.074.423 1.501.865.221.236.549.666.575.77.008.03-1.036.73-1.668 1.123-.023.015-.115-.084-.217-.236-.31-.45-.633-.644-1.128-.678-.728-.05-1.196.331-1.192.967a.88.88 0 0 0 .102.45c.16.331.458.53 1.39.933 1.719.74 2.454 1.227 2.911 1.92.51.773.625 2.008.278 2.926-.38.998-1.325 1.676-2.655 1.9-.411.073-1.386.062-1.828-.018-.964-.172-1.878-.648-2.442-1.273-.221-.244-.651-.88-.625-.925.011-.016.11-.077.22-.141.108-.061.511-.294.892-.515l.69-.4.145.214c.202.308.643.731.91.872.766.404 1.817.347 2.335-.118a.883.883 0 0 0 .313-.72c0-.278-.035-.4-.18-.61-.186-.266-.567-.49-1.649-.96-1.238-.533-1.771-.864-2.259-1.39a3.165 3.165 0 0 1-.659-1.2c-.091-.339-.114-1.189-.042-1.531.255-1.197 1.158-2.03 2.461-2.278.423-.08 1.406-.05 1.821.054zm-5.634 1.002l.008.983H10.59v8.876H8.38v-8.876H5.258v-.964c0-.534.011-.98.026-.99.012-.016 1.913-.024 4.217-.02l4.195.012z"/>
+            </svg>
+          </span>
+          <span class="tech-badge" title="Python">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14.31.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.83l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.23l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.24l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05 1.07.13zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09-.33.22z"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p class="footer-copyright">
+      © 2025 Pokédex Digital | Desenvolvido com ❤️ por
+      <a href="https://www.linkedin.com/in/italomarcony6532/" target="_blank" rel="noopener noreferrer">
+        Italo Marcony
+      </a>
+    </p>
+  </div>
+</footer>
