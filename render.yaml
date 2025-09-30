@@ -1,0 +1,18 @@
+services:
+  # Web Service - Backend Flask + Frontend Angular
+  - type: web
+    name: pokedex-digital
+    env: docker
+    region: oregon
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: FLASK_APP
+        value: app
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 10000
+    healthCheckPath: /

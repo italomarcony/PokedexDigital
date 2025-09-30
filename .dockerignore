@@ -1,0 +1,44 @@
+# Node
+frontend/node_modules
+frontend/dist
+frontend/.angular
+
+# Python
+backend/__pycache__
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.Python
+backend/venv
+backend/env
+backend/.venv
+
+# Database (será criado em runtime)
+backend/*.db
+backend/instance/*.db
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Screenshots (não precisa no deploy)
+screenshots/
+
+# Docker files locais
+docker-compose.yml
+backend/Dockerfile
+frontend/Dockerfile
+DOCKER.md
