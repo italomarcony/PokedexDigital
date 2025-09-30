@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 
 interface PokemonCardData {
@@ -20,7 +20,7 @@ interface PokemonDetail {
   standalone: true,
   imports: [NgFor, NgIf, NgClass],
   template: `
-    <div class="pokemon-card" [class.dark-mode]="darkMode">
+    <div class="pokemon-card" [class.dark-mode]="darkMode" [class.visible]="isVisible">
       <div class="badges-container">
         <span *ngIf="isFavorite" class="badge badge-favorite">⭐ Fav</span>
         <span *ngIf="isInTeam" class="badge badge-team">⚔️ Equipe</span>
@@ -47,8 +47,16 @@ interface PokemonDetail {
         </span>
       </div>
 
+      <!-- OTIMIZAÇÃO: Loading skeleton para stats -->
+      <div *ngIf="!detail && !isVisible" class="stats-skeleton">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+
       <!-- Stats com barras de progresso -->
-      <div class="stats-container">
+      <div *ngIf="detail" class="stats-container">
         <div class="stat-item">
           <div class="stat-label">
             <strong>HP</strong>
@@ -461,9 +469,57 @@ interface PokemonDetail {
         transform: translateX(100%);
       }
     }
+
+    /* OTIMIZAÇÃO: Skeleton loading para stats */
+    .stats-skeleton {
+      margin: 16px 0;
+      padding: 12px;
+      background: rgba(249, 249, 249, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+    }
+
+    .pokemon-card.dark-mode .stats-skeleton {
+      background: rgba(20, 20, 35, 0.6);
+    }
+
+    .skeleton-line {
+      height: 20px;
+      background: linear-gradient(90deg, rgba(200,200,200,0.3) 25%, rgba(200,200,200,0.5) 50%, rgba(200,200,200,0.3) 75%);
+      background-size: 200% 100%;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      animation: skeletonLoading 1.5s infinite;
+    }
+
+    @keyframes skeletonLoading {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* OTIMIZAÇÃO: Animação de entrada quando visível */
+    .pokemon-card {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .pokemon-card.visible {
+      animation: fadeInCard 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInCard {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   `]
 })
-export class PokemonCardComponent {
+export class PokemonCardComponent implements AfterViewInit, OnDestroy {
   @Input() pokemon!: PokemonCardData;
   @Input() detail?: PokemonDetail;
   @Input() isFavorite = false;
@@ -474,6 +530,40 @@ export class PokemonCardComponent {
   @Output() onFavorite = new EventEmitter<void>();
   @Output() onAddToTeam = new EventEmitter<void>();
   @Output() onRemove = new EventEmitter<void>();
+  @Output() onVisible = new EventEmitter<void>(); // OTIMIZAÇÃO: Emite quando card fica visível
+
+  // OTIMIZAÇÃO: Intersection Observer para lazy loading
+  isVisible = false;
+  private observer?: IntersectionObserver;
+
+  constructor(private elementRef: ElementRef) {}
+
+  ngAfterViewInit() {
+    // OTIMIZAÇÃO: Configura Intersection Observer
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !this.isVisible) {
+            this.isVisible = true;
+            this.onVisible.emit(); // Notifica parent que card ficou visível
+            this.observer?.disconnect(); // Para de observar após ficar visível
+          }
+        });
+      },
+      {
+        root: null, // Viewport
+        rootMargin: '50px', // Carrega 50px antes de entrar na tela
+        threshold: 0.1 // 10% do card visível
+      }
+    );
+
+    this.observer.observe(this.elementRef.nativeElement);
+  }
+
+  ngOnDestroy() {
+    // OTIMIZAÇÃO: Limpa observer
+    this.observer?.disconnect();
+  }
 
   get pokemonName(): string {
     return this.pokemon.name || this.pokemon.Codigo || '';

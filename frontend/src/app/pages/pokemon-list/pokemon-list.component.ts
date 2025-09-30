@@ -120,7 +120,8 @@ interface PokemonDetail {
           [isInTeam]="isInTeam(p)"
           [darkMode]="themeService.darkMode()"
           (onFavorite)="favorite(p)"
-          (onAddToTeam)="addToTeam(p)">
+          (onAddToTeam)="addToTeam(p)"
+          (onVisible)="loadPokemonDetailLazy(p)">
         </app-pokemon-card>
       </div>
     </div>
@@ -723,10 +724,10 @@ export class PokemonListComponent implements OnInit {
       next: (res) => {
         this.allPokemons.set(res.results);
         this.pokemons.set(res.results);
-        // Carrega detalhes das primeiras 3 páginas (150 Pokémon) para melhor experiência
-        this.loadPokemonDetails(res.results.slice(0, 150));
-        // Aguarda um pouco para garantir que alguns detalhes foram carregados
-        setTimeout(() => this.isLoading.set(false), 1500);
+        // Carrega detalhes apenas da primeira página (50 Pokémon) - OTIMIZADO
+        this.loadPokemonDetails(res.results.slice(0, 50));
+        // Reduz tempo de espera inicial
+        setTimeout(() => this.isLoading.set(false), 800);
       },
       error: () => {
         this.error.set('Falha ao carregar Pokémon. Tente recarregar a página.');
@@ -735,13 +736,39 @@ export class PokemonListComponent implements OnInit {
     });
   }
 
+  // OTIMIZAÇÃO 5: Lazy loading - carrega um único Pokémon quando o card fica visível
+  loadPokemonDetailLazy(pokemon: BasicPokemon) {
+    // Se já está em cache, não faz nada
+    if (this.pokemonDetailsCache.has(pokemon.name)) {
+      return;
+    }
+
+    console.log(`🔍 Lazy loading: ${pokemon.name}`);
+    this.pokemonService.detail(pokemon.name).subscribe({
+      next: (detail: any) => {
+        this.pokemonDetailsCache.set(detail.name, detail);
+        console.log(`✅ ${pokemon.name} carregado via lazy loading`);
+      },
+      error: (err) => {
+        console.error(`❌ Erro ao carregar ${pokemon.name}:`, err);
+      }
+    });
+  }
+
   loadPokemonDetails(pokemons: BasicPokemon[]) {
+    // OTIMIZAÇÃO: Filtra apenas os que NÃO estão em cache
     const toLoad = pokemons.filter(p => !this.pokemonDetailsCache.has(p.name));
 
-    if (toLoad.length === 0) return;
+    // OTIMIZAÇÃO: Se tudo já está em cache, não faz nada
+    if (toLoad.length === 0) {
+      console.log('✅ Todos os detalhes já estão em cache');
+      return;
+    }
 
-    // Carregar em batches de 25 para não sobrecarregar
-    const batchSize = 25;
+    console.log(`📥 Carregando ${toLoad.length} novos detalhes (${pokemons.length - toLoad.length} já em cache)`);
+
+    // OTIMIZAÇÃO: Reduz batch size de 25 para 15 para evitar rate limit
+    const batchSize = 15;
     const batches: BasicPokemon[][] = [];
 
     for (let i = 0; i < toLoad.length; i += batchSize) {
@@ -757,10 +784,13 @@ export class PokemonListComponent implements OnInit {
             details.forEach((detail: any) => {
               this.pokemonDetailsCache.set(detail.name, detail);
             });
+            console.log(`✓ Batch ${index + 1}/${batches.length} carregado`);
           },
-          error: () => {}
+          error: (err) => {
+            console.error('❌ Erro ao carregar batch:', err);
+          }
         });
-      }, index * 200); // 200ms de delay entre batches
+      }, index * 250); // OTIMIZAÇÃO: Aumenta delay de 200ms para 250ms para reduzir rate limit
     });
   }
 
@@ -769,12 +799,12 @@ export class PokemonListComponent implements OnInit {
     this.currentPage.set(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Carrega detalhes da página atual e próximas 2 páginas
+    // Carrega detalhes apenas da página atual (50 Pokémon) - OTIMIZADO
     const start = (page - 1) * this.itemsPerPage;
     const allPokemons = this.searchTerm().toLowerCase().trim()
       ? this.pokemons().filter(p => p.name.toLowerCase().includes(this.searchTerm().toLowerCase()))
       : this.pokemons();
-    this.loadPokemonDetails(allPokemons.slice(start, start + 150));
+    this.loadPokemonDetails(allPokemons.slice(start, start + 50));
   }
 
   nextPage() {
@@ -808,7 +838,7 @@ export class PokemonListComponent implements OnInit {
     // Se não há filtros, mostra todos
     if (!generation && !type) {
       this.pokemons.set(this.allPokemons());
-      this.loadPokemonDetails(this.allPokemons().slice(0, 150));
+      this.loadPokemonDetails(this.allPokemons().slice(0, 50)); // OTIMIZADO: 150 → 50
       return;
     }
 
@@ -819,7 +849,7 @@ export class PokemonListComponent implements OnInit {
         this.pokemonService.list(range.limit, range.offset).subscribe({
           next: (res) => {
             this.pokemons.set(res.results);
-            this.loadPokemonDetails(res.results.slice(0, 150));
+            this.loadPokemonDetails(res.results.slice(0, 50)); // OTIMIZADO: 150 → 50
           },
           error: () => this.error.set('Falha ao filtrar por geração.')
         });
@@ -832,7 +862,7 @@ export class PokemonListComponent implements OnInit {
       this.typesService.listByType(type).subscribe({
         next: (res) => {
           this.pokemons.set(res.results);
-          this.loadPokemonDetails(res.results.slice(0, 150));
+          this.loadPokemonDetails(res.results.slice(0, 50)); // OTIMIZADO: 150 → 50
         },
         error: () => this.error.set('Falha ao filtrar por tipo.')
       });
@@ -852,7 +882,7 @@ export class PokemonListComponent implements OnInit {
             const genNames = new Set(result.generationPokemon.results.map(p => p.name));
             const filtered = result.typePokemon.results.filter(p => genNames.has(p.name));
             this.pokemons.set(filtered);
-            this.loadPokemonDetails(filtered.slice(0, 150));
+            this.loadPokemonDetails(filtered.slice(0, 50)); // OTIMIZADO: 150 → 50
           },
           error: () => this.error.set('Falha ao aplicar filtros combinados.')
         });

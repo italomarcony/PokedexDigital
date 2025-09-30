@@ -9,6 +9,11 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [FormsModule, NgIf, RouterLink],
   template: `
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
     <div style="max-width: 400px; margin: 50px auto; padding: 20px;">
       <h2 style="margin-bottom: 32px;">Criar Conta</h2>
       <form (ngSubmit)="submit()" #f="ngForm" style="display:flex; flex-direction:column; gap:12px;">
@@ -52,9 +57,13 @@ import { AuthService } from '../../services/auth.service';
         />
         <button
           type="submit"
-          style="padding: 12px; background: #ff6b35; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;"
+          [disabled]="isLoading"
+          style="padding: 12px; background: #ff6b35; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;"
+          [style.opacity]="isLoading ? '0.7' : '1'"
+          [style.cursor]="isLoading ? 'not-allowed' : 'pointer'"
         >
-          Registrar
+          <span *ngIf="isLoading" style="display: inline-block; width: 16px; height: 16px; border: 2px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite;"></span>
+          <span>{{ isLoading ? 'Registrando...' : 'Registrar' }}</span>
         </button>
       </form>
 
@@ -86,6 +95,7 @@ export class RegisterComponent {
   confirmarSenha = '';
   msg = '';
   error = '';
+  isLoading = false; // OTIMIZAÇÃO: Estado de loading
 
   submit() {
     this.msg = '';
@@ -103,6 +113,8 @@ export class RegisterComponent {
       return;
     }
 
+    this.isLoading = true; // OTIMIZAÇÃO: Ativa loading
+
     this.auth.register(this.nome, this.login, this.email, this.senha).subscribe({
       next: (resp: any) => {
         if (resp?.access_token) {
@@ -114,6 +126,7 @@ export class RegisterComponent {
         setTimeout(() => this.router.navigateByUrl('/login'), 800);
       },
       error: (err) => {
+        this.isLoading = false; // OTIMIZAÇÃO: Desativa loading em erro
         if (err?.status === 409) {
           this.error = err?.error?.msg || 'Login ou e-mail já existente';
         } else if (err?.status === 400) {
@@ -121,6 +134,9 @@ export class RegisterComponent {
         } else {
           this.error = 'Falha ao registrar';
         }
+      },
+      complete: () => {
+        this.isLoading = false; // OTIMIZAÇÃO: Desativa loading ao completar
       }
     });
   }
