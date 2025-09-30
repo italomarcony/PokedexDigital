@@ -70,3 +70,14 @@ a, button, input, select, textarea {
   background: rgba(102, 126, 234, 0.3);
   color: #333;
 }
+
+/* Dark Mode Global Styles */
+body.dark-mode {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+  color: #e0e0e0;
+}
+
+body.dark-mode ::selection {
+  background: rgba(102, 126, 234, 0.5);
+  color: #fff;
+}

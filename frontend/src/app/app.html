@@ -172,6 +172,14 @@
   }
 </style>
 
+<!-- Dark Mode Toggle - Global -->
+<div class="dark-mode-toggle-global">
+  <button (click)="toggleDarkMode()" class="toggle-btn-global">
+    <span *ngIf="!themeService.darkMode()">🌙</span>
+    <span *ngIf="themeService.darkMode()">☀️</span>
+  </button>
+</div>
+
 <header class="hero-banner">
   <h1 class="hero-title">
     <svg class="pokeball-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">

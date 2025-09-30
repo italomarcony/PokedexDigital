@@ -1,3 +1,47 @@
+/* Dark Mode Toggle - Global */
+.dark-mode-toggle-global {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001;
+}
+
+.toggle-btn-global {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.toggle-btn-global:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.3);
+  background: rgba(255, 255, 255, 1);
+}
+
+.toggle-btn-global:active {
+  transform: translateY(0) scale(1);
+}
+
+body.dark-mode .toggle-btn-global {
+  background: rgba(26, 26, 46, 0.9);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+body.dark-mode .toggle-btn-global:hover {
+  background: rgba(26, 26, 46, 1);
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+}
+
 /* Hero Banner - Unified Gradient Theme */
 .hero-banner {
   background: linear-gradient(135deg, #FF6B35 0%, #F7931E 40%, #667EEA 100%);
@@ -266,6 +310,42 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Dark Mode Styles for Header/Nav/Stats */
+body.dark-mode .hero-banner {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .main-nav {
+  background: rgba(26, 26, 46, 0.9);
+  border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+body.dark-mode .main-nav a {
+  color: #e0e0e0;
+}
+
+body.dark-mode .main-nav a:hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: #a0aeff;
+}
+
+body.dark-mode .main-nav a.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+body.dark-mode .user-name {
+  color: #e0e0e0;
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+body.dark-mode .stats-bar {
+  background: linear-gradient(135deg, #1E2875 0%, #2E3DA0 50%, #3B4CCA 100%);
+  border-top: 2px solid rgba(102, 126, 234, 0.3);
 }
 
 /* Responsive Design */

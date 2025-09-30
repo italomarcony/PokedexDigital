@@ -5,6 +5,7 @@ import { PokemonService, BasicPokemon } from '../../services/pokemon.service';
 import { UserPokemonService } from '../../services/user-pokemon.service';
 import { TypesService, TypeItem } from '../../services/types.service';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 import { PokemonCardComponent } from '../../components/pokemon-card/pokemon-card.component';
 import { forkJoin } from 'rxjs';
 
@@ -21,19 +22,11 @@ interface PokemonDetail {
   standalone: true,
   imports: [NgFor, NgIf, NgClass, FormsModule, PokemonCardComponent],
   template: `
-    <div [class.dark-mode]="darkMode()" class="page-container">
+    <div [class.dark-mode]="themeService.darkMode()" class="page-container">
       <div *ngIf="toast()"
            [ngClass]="{'toast-success': toast()?.type === 'success', 'toast-error': toast()?.type === 'error'}"
            class="toast">
         {{ toast()?.message }}
-      </div>
-
-      <!-- Dark Mode Toggle -->
-      <div class="dark-mode-toggle">
-        <button (click)="toggleDarkMode()" class="toggle-btn">
-          <span *ngIf="!darkMode()">🌙 Modo Escuro</span>
-          <span *ngIf="darkMode()">☀️ Modo Claro</span>
-        </button>
       </div>
 
       <div class="page-header">
@@ -125,7 +118,7 @@ interface PokemonDetail {
           [detail]="pokemonDetailsCache.get(p.name)"
           [isFavorite]="isFavorite(p)"
           [isInTeam]="isInTeam(p)"
-          [darkMode]="darkMode()"
+          [darkMode]="themeService.darkMode()"
           (onFavorite)="favorite(p)"
           (onAddToTeam)="addToTeam(p)">
         </app-pokemon-card>
@@ -322,32 +315,6 @@ interface PokemonDetail {
     .results-badge strong,
     .page-badge strong {
       font-weight: 700;
-    }
-
-    .dark-mode-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1001;
-    }
-
-    .toggle-btn {
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 30px;
-      color: inherit;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .toggle-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-      background: rgba(255, 255, 255, 0.15);
     }
 
     /* Toast Notifications */
@@ -654,6 +621,7 @@ export class PokemonListComponent implements OnInit {
   private userPokemonService = inject(UserPokemonService);
   private typesService = inject(TypesService);
   private authService = inject(AuthService);
+  themeService = inject(ThemeService);
 
   pokemons = signal<BasicPokemon[]>([]);
   allPokemons = signal<BasicPokemon[]>([]);
@@ -673,9 +641,6 @@ export class PokemonListComponent implements OnInit {
   // Paginação
   currentPage = signal<number>(1);
   itemsPerPage = 50;
-
-  // Dark Mode
-  darkMode = signal<boolean>(false);
 
   // Loading State
   isLoading = signal<boolean>(true);
@@ -975,12 +940,6 @@ export class PokemonListComponent implements OnInit {
 
   // Novos métodos para as melhorias
 
-  toggleDarkMode() {
-    this.darkMode.set(!this.darkMode());
-    // Salva preferência no localStorage
-    localStorage.setItem('darkMode', String(this.darkMode()));
-  }
-
   getPokemonGeneration(p: BasicPokemon): number {
     const match = /\/pokemon\/(\d+)\/?$/.exec(p.url);
     if (!match) return 1;
@@ -1015,12 +974,6 @@ export class PokemonListComponent implements OnInit {
   }
 
   constructor() {
-    // Carrega preferência de dark mode do localStorage
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'true') {
-      this.darkMode.set(true);
-    }
-
     this.loadDefault();
     this.typesService.listTypes().subscribe({
       next: (res) => {
